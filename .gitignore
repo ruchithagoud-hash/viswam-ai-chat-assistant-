@@ -1,0 +1,26 @@
+# Ignore virtual environment
+venv/
+ENV/
+.env/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Ignore large ML/AI model files
+models/
+*.safetensors
+*.bin
+*.index
+*.pt
+*.pth
+*.h5
+
+# Ignore OS/system files
+.DS_Store
+Thumbs.db
