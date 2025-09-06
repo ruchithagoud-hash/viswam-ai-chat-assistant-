@@ -1,9 +1,41 @@
 import streamlit as st
+import openai
 
-st.title("Viswam AI Chat Assistant")
-st.write("Hello from Viswam AI Assistant 🚀")
+# Load API key from Streamlit secrets
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-user_input = st.text_input("Type your message:")
+st.title("🤖 Viswam AI Chat Assistant")
 
-if user_input:
-    st.write(f"You said: {user_input}")
+# Keep chat history
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+
+# Show past messages
+for msg in st.session_state["messages"]:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+# User input
+if prompt := st.chat_input("Ask me anything..."):
+    # Save user message
+    st.session_state["messages"].append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Get response from OpenAI
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",  # you can use "gpt-4" if available
+                messages=[
+                    {"role": m["role"], "content": m["content"]}
+                    for m in st.session_state["messages"]
+                ]
+            )
+            reply = response["choices"][0]["message"]["content"]
+        except Exception as e:
+            reply = f"⚠️ Error: {e}"
+
+        message_placeholder.markdown(reply)
+        st.session_state["messages"].append({"role": "assistant", "content": reply})
